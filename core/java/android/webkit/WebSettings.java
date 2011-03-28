@@ -427,6 +427,14 @@ public class WebSettings {
     }
 
     /**
+     * Hides the onscreen zoom controls
+     * @hide
+     */
+    public void showZoomControls(boolean value) {
+        mWebView.showZoomControls(value);
+    }
+
+    /**
      * Set whether the WebView supports zoom
      */
     public void setSupportZoom(boolean support) {

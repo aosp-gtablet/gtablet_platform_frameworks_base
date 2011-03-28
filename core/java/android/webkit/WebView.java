@@ -48,6 +48,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.text.IClipboard;
 import android.text.Selection;
 import android.text.Spannable;
@@ -816,6 +817,9 @@ public class WebView extends AbsoluteLayout
     public static final String SCHEME_GEO = "geo:0,0?q=";
 
     private int mBackgroundColor = Color.WHITE;
+    
+    //Wysie
+    private boolean showZoomControls = true;
 
     // Used to notify listeners of a new picture.
     private PictureListener mPictureListener;
@@ -987,6 +991,11 @@ public class WebView extends AbsoluteLayout
 
         updateMultiTouchSupport(context);
     }
+    
+    //Wysie
+    void showZoomControls(boolean value) {
+        showZoomControls = value;
+    }
 
     void updateMultiTouchSupport(Context context) {
         WebSettings settings = getSettings();
@@ -1005,17 +1014,21 @@ public class WebView extends AbsoluteLayout
 
     private void updateZoomButtonsEnabled() {
         if (mZoomButtonsController == null) return;
-        boolean canZoomIn = mActualScale < mMaxZoomScale;
-        boolean canZoomOut = mActualScale > mMinZoomScale && !mInZoomOverview;
-        if (!canZoomIn && !canZoomOut) {
-            // Hide the zoom in and out buttons, as well as the fit to page
-            // button, if the page cannot zoom
+        if (!showZoomControls) {
             mZoomButtonsController.getZoomControls().setVisibility(View.GONE);
         } else {
-            // Set each one individually, as a page may be able to zoom in
-            // or out.
-            mZoomButtonsController.setZoomInEnabled(canZoomIn);
-            mZoomButtonsController.setZoomOutEnabled(canZoomOut);
+            boolean canZoomIn = mActualScale < mMaxZoomScale;
+            boolean canZoomOut = mActualScale > mMinZoomScale && !mInZoomOverview;
+                if (!canZoomIn && !canZoomOut) {
+                // Hide the zoom in and out buttons, as well as the fit to page
+                // button, if the page cannot zoom
+                mZoomButtonsController.getZoomControls().setVisibility(View.GONE);
+            } else {
+                // Set each one individually, as a page may be able to zoom in
+                // or out.
+                mZoomButtonsController.setZoomInEnabled(canZoomIn);
+                mZoomButtonsController.setZoomOutEnabled(canZoomOut);
+            }
         }
     }
 
@@ -5026,6 +5039,10 @@ public class WebView extends AbsoluteLayout
                 boolean reflowNow = (mActualScale - mMinZoomScale
                         <= MINIMUM_SCALE_INCREMENT)
                         || ((mActualScale <= 0.8 * mTextWrapScale));
+                if(mActualScale > mTextWrapScale) {
+                    reflowNow |= Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.WEB_VIEW_PINCH_REFLOW, 0) != 0;
+                }
                 // force zoom after mPreviewZoomOnly is set to false so that the
                 // new view size will be passed to the WebKit
                 setNewZoomScale(mActualScale, reflowNow, true);
@@ -5547,6 +5564,7 @@ public class WebView extends AbsoluteLayout
                         mHeldMotionless = MOTIONLESS_TRUE;
                         invalidate();
                         // fall through
+                    case TOUCH_PINCH_DRAG:
                     case TOUCH_DRAG_START_MODE:
                         // TOUCH_DRAG_START_MODE should not happen for the real
                         // device as we almost certain will get a MOVE. But this
@@ -6899,7 +6917,7 @@ public class WebView extends AbsoluteLayout
 
                             if (mInitialScaleInPercent > 0) {
                                 setNewZoomScale(mInitialScaleInPercent / 100.0f,
-                                    mInitialScaleInPercent != mTextWrapScale * 100,
+                                    mInitialScaleInPercent != ((int)mTextWrapScale * 100),
                                     false);
                             } else if (restoreState.mViewScale > 0) {
                                 mTextWrapScale = restoreState.mTextWrapScale;
@@ -7558,7 +7576,7 @@ public class WebView extends AbsoluteLayout
                                 EventHub.SINGLE_LISTBOX_CHOICE, -2, 0);
                 }});
             }
-            mListBoxDialog = b.create();
+            final AlertDialog dialog = b.create();
             listView.setAdapter(adapter);
             listView.setFocusableInTouchMode(true);
             // There is a bug (1250103) where the checks in a ListView with
@@ -7580,8 +7598,7 @@ public class WebView extends AbsoluteLayout
                             int position, long id) {
                         mWebViewCore.sendMessage(
                                 EventHub.SINGLE_LISTBOX_CHOICE, (int)id, 0);
-                        mListBoxDialog.dismiss();
-                        mListBoxDialog = null;
+                        dialog.dismiss();
                     }
                 });
                 if (mSelection != -1) {
@@ -7593,14 +7610,13 @@ public class WebView extends AbsoluteLayout
                     adapter.registerDataSetObserver(observer);
                 }
             }
-            mListBoxDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 public void onCancel(DialogInterface dialog) {
                     mWebViewCore.sendMessage(
                                 EventHub.SINGLE_LISTBOX_CHOICE, -2, 0);
-                    mListBoxDialog = null;
                 }
             });
-            mListBoxDialog.show();
+            dialog.show();
         }
     }
 

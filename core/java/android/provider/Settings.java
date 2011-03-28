@@ -58,7 +58,16 @@ import java.util.Map;
  */
 public final class Settings {
 
-    // Intent actions for Settings
+    /**
+     * Intent actions for Settings
+     *
+     * @hide
+     */
+    public static final String SETTINGS_CHANGED = "android.settings.SETTINGS_CHANGED_ACTION";
+
+    public Settings() {
+        /* Empty for API conflicts */
+    }
 
     /**
      * Activity Action: Show system settings.
@@ -1553,6 +1562,13 @@ public final class Settings {
          * @hide
          */
         public static final String FANCY_IME_ANIMATIONS = "fancy_ime_animations";
+
+        /**
+         * Whether WebViews reflow content when zooming in by pinching. The value is
+         * boolean (1 or 0).
+         * @hide
+         */
+        public static final String WEB_VIEW_PINCH_REFLOW = "web_view_pinch_reflow";
 
         /**
          * Control whether the accelerometer will be used to change screen
