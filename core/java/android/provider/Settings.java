@@ -1563,6 +1563,12 @@ public final class Settings {
         public static final String ACCELEROMETER_ROTATION = "accelerometer_rotation";
 
         /**
+         * Specifies whether to prompt on the power dialog
+         * @hide
+         */
+        public static final String POWER_DIALOG_PROMPT = "power_dialog_prompt";
+
+        /**
          * Whether the audible DTMF tones are played by the dialer when dialing. The value is
          * boolean (1 or 0).
          */
