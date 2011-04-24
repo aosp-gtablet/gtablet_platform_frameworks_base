@@ -365,6 +365,14 @@ uint32_t OMXCodec::getComponentQuirks(
     if (!strcmp(componentName, "OMX.PV.avcdec")) {
         quirks |= kWantsNALFragments;
     }
+
+    if (!strcmp(componentName, "OMX.Nvidia.amr.decoder") ||
+         !strcmp(componentName, "OMX.Nvidia.amrwb.decoder") ||
+         !strcmp(componentName, "OMX.Nvidia.aac.decoder") ||
+         !strcmp(componentName, "OMX.Nvidia.mp3.decoder")) {
+        quirks |= kDecoderLiesAboutNumberOfChannels;
+    }
+
     if (!strcmp(componentName, "OMX.TI.MP3.decode")) {
         quirks |= kNeedsFlushBeforeDisable;
         quirks |= kDecoderLiesAboutNumberOfChannels;
