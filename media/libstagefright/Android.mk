@@ -102,6 +102,10 @@ ifneq ($(TARGET_SIMULATOR),true)
 LOCAL_SHARED_LIBRARIES += libdl
 endif
 
+ifeq ($(TARGET_USE_SOFTWARE_AUDIO_AAC),true)
+	LOCAL_CFLAGS += -DUSE_SOFTWARE_AUDIO_AAC
+endif
+
 ifeq ($(TARGET_OS)-$(TARGET_SIMULATOR),linux-true)
         LOCAL_LDLIBS += -lpthread
 endif
