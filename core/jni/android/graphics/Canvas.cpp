@@ -61,12 +61,11 @@ public:
     }
     
     static SkCanvas* initGL(JNIEnv* env, jobject) {
-        return new SkGLCanvas;
+        return 0;
     }
     
     static void freeCaches(JNIEnv* env, jobject) {
         // these are called in no particular order
-        SkGLCanvas::DeleteAllTextures();
         SkImageRef_GlobalPool::SetRAMUsed(0);
         SkGraphics::SetFontCacheUsed(0);
     }
@@ -680,7 +679,7 @@ public:
         }
         SkShader* shader = SkShader::CreateBitmapShader(*bitmap,
                         SkShader::kClamp_TileMode, SkShader::kClamp_TileMode);
-        tmpPaint.setShader(shader)->safeUnref();
+        SkSafeUnref(tmpPaint.setShader(shader));
 
         canvas->drawVertices(SkCanvas::kTriangles_VertexMode, ptCount, verts,
                              texs, (const SkColor*)colorA.ptr(), NULL, indices,
