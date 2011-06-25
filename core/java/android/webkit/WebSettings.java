@@ -1060,7 +1060,7 @@ public class WebSettings {
      */
     @Deprecated
     public synchronized void setPluginsEnabled(boolean flag) {
-        setPluginState(PluginState.ON);
+        setPluginState(flag ? PluginState.ON : PluginState.OFF);
     }
 
     /**

@@ -28,6 +28,8 @@ struct SurfaceTexture {
     void incStrong(android::sp<android::SurfaceTexture>* const) {}
     void getTransformMatrix(float mtx[16]) {}
     void setFrameAvailableListener(const sp<FrameAvailableListener>&) {}
+    void setSynchronousMode(bool) {}
+    GLenum getCurrentTextureTarget() const { return 0; }
 };
 
 static sp<SurfaceTexture> SurfaceTexture_getSurfaceTexture(JNIEnv* env, jobject thiz)
